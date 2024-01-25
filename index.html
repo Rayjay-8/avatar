@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+    <script src="https://unpkg.com/konva@9.3.1/konva.min.js"></script>
+    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
+    <title>Image Crop with Cropper.js</title>
+    <style>
+        #cropperImage{
+            width: 300px;
+            height: 300px;
+            border-radius: 10px;
+        }
+
+        body{
+            /* width: 300px; */
+            display: flex;
+            flex-direction: column;
+            background-color: #2d303b;
+            color: #fff;
+            padding: 3rem;
+        }
+
+        .preview_wrapper, .preview {
+      overflow: hidden;
+      width: 50px; height: 50px;
+    }
+
+    .cropper-view-box {
+	border-radius: 50%;
+}
+.cropper-face {
+	background-color:inherit !important;
+}
+
+.minapp{
+    width: 300px;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+}
+
+.resultcont{
+    display: flex;
+    gap: 1rem;
+    height: 500px;
+    overflow: auto;
+    background: #3a3e4f;
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+.imgfit{
+    height: 100%;
+}
+
+
+button{
+    padding: 1rem ;
+    background-color: #66c;
+    color: #fff;
+    border: solid 0px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+button:disabled{
+    background-color: #555;
+    cursor: no-drop;
+    pointer-events:none;
+}
+
+button:hover{
+    background-color: rgb(70, 70, 165);
+}
+
+/* esconde todas mas mantem o tamanho */
+/* .konvajs-content{
+    visibility: hidden;
+} */
+
+#buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+    </style>
+</head>
+<body>
+    <div class="minapp">
+        <!-- <div class="preview_wrapper">
+            <div class="preview"></div>
+        </div> -->
+        <input type="file" id="imageInput" accept="image/*">
+        <img id="cropperImage" src="default.png"></img>
+        <div id="buttons">
+            <button onclick="cropImage()" id="generate" >Generate Avatar</button>
+            <button id="save" disabled>Save All</button>
+        </div>
+    </div>
+
+    <div class="resultcont">
+
+    </div>
+    <script>
+const configImages = {
+    "1.png": {
+        x: 50,
+        y: 35,
+        width: 120,
+        height: 120,
+        origem_w:277,
+        origem_h:1000
+    },
+    "2.png": {
+        x: 196,
+        y: 0,
+        width: 129,
+        height: 129,
+        origem_w:378,
+        origem_h:406,
+        rotation: 7.7
+    },
+    "3.png": {
+        x: 220,
+        y: 0,
+        width: 260,
+        height: 260,
+        origem_w:755,
+        origem_h:1125
+    },
+    "4.png": {
+        x: 264,
+        y: 35,
+        width: 260,
+        height: 260,
+        origem_w:800,
+        origem_h:1201
+    },
+    "5.png": {
+        x: 233,
+        y: 3,
+        width: 300,
+        height: 300,
+        origem_w:787,
+        origem_h:1150
+    },
+    "6.png": {
+        x: 165,
+        y: 0,
+        width: 187,
+        height: 187,
+        origem_w:608,
+        origem_h:1320,
+        rotation: 10
+    },
+    "7.png": {
+        x: 300,
+        y: 0,
+        width: 205,
+        height: 205,
+        origem_w:756,
+        origem_h:942,
+        rotation: 2.2
+    },
+    "8.png": {
+        x: 125,
+        y: -1,
+        width: 202,
+        height: 202,
+        origem_w:489,
+        origem_h:739,
+        rotation: 4.3
+    },
+    "9.png": {
+        x: 98,
+        y: 1,
+        width: 222,
+        height: 222,
+        origem_w:417,
+        origem_h:969,
+        rotation: 0
+    },
+    "10.png": {
+        x: 500,
+        y: 18,
+        width: 309,
+        height: 309,
+        origem_w:1300,
+        origem_h:956,
+        rotation: 0
+    },
+    "11.png": {
+        x: 80,
+        y: 22,
+        width: 135,
+        height: 135,
+        origem_w:408,
+        origem_h:612,
+        rotation: 0
+    },
+    "12.png": {
+        x: 108,
+        y: 50,
+        width: 274,
+        height: 274,
+        origem_w:586,
+        origem_h:1000,
+        rotation: 0
+    },
+    "13.png": {
+        x: 98,
+        y: 85,
+        width: 287,
+        height: 287,
+        origem_w:516,
+        origem_h:1000,
+        rotation: 0
+    },
+    "14.png": {
+        x: 828,
+        y: 32,
+        width: 289,
+        height: 289,
+        origem_w:1920,
+        origem_h:1080,
+        rotation: 0
+    },
+    "15.png": {
+        x: 840,
+        y: 120,
+        width: 350,
+        height: 350,
+        origem_w:1920,
+        origem_h:1080,
+        rotation: 20
+    },
+    "16.png": {
+        x: 700,
+        y: 252,
+        width: 383,
+        height: 383,
+        origem_w:1920,
+        origem_h:1080,
+        rotation: -14
+    },
+    "17.png": {
+        x: 177,
+        y: 4,
+        width: 358,
+        height: 358,
+        origem_w:816,
+        origem_h:1000,
+        rotation: 0
+    },
+    "18.png": {
+        x: 650,
+        y: 4,
+        width: 383,
+        height: 383,
+        origem_w:1600,
+        origem_h:1219,
+        rotation: 0
+    },
+    "19.png": {
+        x: 528,
+        y: 109,
+        width: 379,
+        height: 379,
+        origem_w:1200,
+        origem_h:1200,
+        rotation: 0,
+        onTop: true
+    },
+    "20.png": {
+        x: 168,
+        y: -12,
+        width: 293,
+        height: 293,
+        origem_w:594,
+        origem_h:800,
+        rotation: 13,
+        onTop: true
+    },
+    "21.png": {
+        x: 176,
+        y: 79,
+        width: 155,
+        height: 155,
+        origem_w:502,
+        origem_h:800,
+        rotation: 0,
+        onTop: true
+    },
+    "22.png": {
+        x: 122,
+        y: 46,
+        width: 102,
+        height: 102,
+        origem_w:423,
+        origem_h:800,
+        rotation: 0,
+        onTop: true
+    },
+    "23.png": {
+        x: 284,
+        y: 161,
+        width: 350,
+        height: 350,
+        origem_w:1200,
+        origem_h:1579,
+        rotation: -5
+    },
+    "24.png": {
+        x: 162,
+        y: 12,
+        width: 284,
+        height: 284,
+        origem_w:663,
+        origem_h:506,
+        rotation: -3
+    },
+    "25.png": {
+        x: 486,
+        y: 36,
+        width: 205,
+        height: 205,
+        origem_w:1200,
+        origem_h:1200,
+        rotation: -10
+    }
+}
+
+const todasImagens = Object.entries(configImages)
+
+for(const [imageName, imageConfig] of todasImagens){
+    var container_img = document.createElement("div");
+    container_img.id = "container_"+imageName
+    container_img.className = "imgfit"
+
+    const el = document.getElementsByClassName("resultcont")[0]
+
+    //document.body
+    el.appendChild(container_img);
+}
+
+var width = window.innerWidth;
+var height = window.innerHeight;
+const allstage = []
+const allimages = []
+const allavatartlayer = []
+let allavatarcroped = []
+
+function addimgbody(){
+    for(const [imageName, imageConfig] of todasImagens){
+        const stage = new Konva.Stage({container: 'container_'+imageName, width: imageConfig.origem_w, height: imageConfig.origem_h});
+        allstage.push(stage)
+        const layer = new Konva.Layer();
+        stage.add(layer);
+        allavatartlayer.push(layer)
+        // main API:
+        const imageObj = new Image();
+        imageObj.onload = function () {
+        const yoda = new Konva.Image({
+          x: 0,
+          y: 0,
+          image: imageObj,
+          scaleX: 1,
+          scaleY: 1,
+        });
+        // add the shape to the layer
+        layer.add(yoda);
+      };
+      imageObj.src = '/'+imageName;
+      allimages.push(imageObj)
+    }
+    // updateSize(imageObj.width, imageObj.height)
+}
+addimgbody()
+//-----------------------------------------------------
+var cropper;
+function getRoundedCanvas(sourceCanvas) {
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    var width = sourceCanvas.width;
+    var height = sourceCanvas.height;
+
+    canvas.width = width;
+    canvas.height = height;
+    context.imageSmoothingEnabled = true;
+    context.drawImage(sourceCanvas, 0, 0, width, height);
+    context.globalCompositeOperation = 'destination-in';
+    context.beginPath();
+    context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+    context.fill();
+    return canvas;
+}
+
+// Função para carregar a imagem no cropper
+function loadAndInitializeCropper(imageURL) {
+    var image = document.getElementById('cropperImage');
+    image.src = imageURL;
+    cropper = new Cropper(image, {
+        preview: '.preview',
+        rounded: true,
+        aspectRatio: 1, // Pode ajustar conforme necessário
+        viewMode: 1,
+    });
+}
+
+function removeLastLayer() {
+    var layers = stage.children; // Obtém todas as camadas no Stage
+    if (layers.length > 0) {
+        var lastLayer = layers[layers.length - 1]; // Obtém a última camada
+        lastLayer.remove(); // Remove a última camada do Stage
+        stage.draw(); // Redesenha o Stage para aplicar as alterações
+    }
+}
+
+// Função para realizar o crop da imagem
+let alreadygenerated = false
+async function cropImage() {
+    // Obtenha a imagem cortada como uma URL de dados
+    var croppedCanvas = cropper.getCroppedCanvas();
+    var roundedCanvas = getRoundedCanvas(croppedCanvas);
+    var croppedDataURL = roundedCanvas.toDataURL();
+    // adiciona em cada imagem a cara cropada!!!
+    let stage;
+    let imageObj;
+
+    
+    const copyarray = []
+    for(const [index, s] of allstage.entries()){
+
+        
+
+        console.log(alreadygenerated)
+        stage = s
+        imageObj = allimages[index]
+
+        // remove last layer added
+        if(alreadygenerated){
+            allavatarcroped[index].destroy()
+            
+            //allavatarcroped.splice(index, 1)
+        }
+    
+        var layerUP = new Konva.Layer();
+        stage.add(layerUP);
+        var imageObj2 = new Image();
+        const imgid = imageObj.src.split("/").at(-1)
+        if(!imgid){alert("I don`t know what image is!")}
+        const configImg = configImages[imgid]
+        if(!configImg){alert("I don`t know what image is!")}
+        // ao invez de setar ele na div, adiciona essa imagem no canva
+        var tmp = new Konva.Image({
+            x: configImg.x,
+            y: configImg.y,
+            image: imageObj2,
+            width: configImg.width,
+            height:configImg.height,
+            draggable: true,
+            rotation: configImg.rotation ?? 0
+        });
+
+        copyarray.push(tmp)
+        
+
+        // debugger
+        tmp.on('dragend', (e) => {
+            console.log(e.target.x(), e.target.y(), e.target.rotation(), e.target.width(), e.target.height(), e.target.scaleX(), e.target.scaleY())
+            console.log(e.target)
+        })
+
+        imageObj2.src = croppedDataURL
+        layerUP.add(tmp);
+
+        // create new transformer
+        //var tr = new Konva.Transformer();
+        //layerUP.add(tr);
+        //tr.nodes([tmp]);
+
+        if(configImg?.onTop){
+            allavatartlayer[index].moveToTop()
+        }   
+    }
+
+    allavatarcroped = copyarray
+
+
+    //document.getElementById("generate").disabled = true
+    document.getElementById("save").disabled = false
+
+    alreadygenerated = true
+}
+
+// Lidar com a seleção de uma nova imagem
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        var imageURL = event.target.result;
+        loadAndInitializeCropper(imageURL);
+        // document.getElementById("generate").disabled = false
+    };
+    reader.readAsDataURL(file);
+});
+
+
+function downloadURI(uri, name) {
+    var link = document.createElement('a');
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
+}
+
+document.getElementById('save').addEventListener(
+    'click',
+    function () {
+        var zip = new JSZip();
+        for(const [index, s] of allstage.entries()){
+            var dataURL = s.toDataURL({ pixelRatio: 1 });
+            var binaryData = atob(dataURL.split(',')[1]);
+            var byteArray = new Uint8Array(binaryData.length);
+            for (var i = 0; i < binaryData.length; i++) {
+                byteArray[i] = binaryData.charCodeAt(i);
+            }
+            var meuBlob = new Blob([byteArray], { type: 'image/png' });
+            zip.file(index+'_stage.png', meuBlob)
+            // downloadURI(dataURL, index+'_stage.png');
+        }
+        var promise = null;
+        promise = zip.generateAsync({type : "blob"}).then(function (blobblob){
+            downloadURI(URL.createObjectURL(blobblob), 'edit_avatars.zip')
+        })
+    },
+    false
+);
+    </script>
+</body>
+</html>
