@@ -331,6 +331,101 @@ const configImages = {
         origem_w:1200,
         origem_h:1200,
         rotation: -10
+    },
+    "26.png": {
+        x: 78,
+        y: 6,
+        width: 105,
+        height: 105,
+        origem_w:259,
+        origem_h:598,
+        rotation: 0
+    },
+    "27.png": {
+        x: 363,
+        y: 22,
+        width: 205,
+        height: 205,
+        origem_w:844,
+        origem_h:1500,
+        rotation: 12
+    },
+    "28.png": {
+        x: 1226,
+        y: 45,
+        width: 533,
+        height: 533,
+        origem_w:3000,
+        origem_h:2000,
+        rotation: 0
+    },
+    "29.png": {
+        x: 239,
+        y: 0,
+        width: 112,
+        height: 112,
+        origem_w:482,
+        origem_h:618,
+        rotation: 4
+    },
+    "30.png": {
+        x: 438,
+        y: 331,
+        width: 610,
+        height: 610,
+        origem_w:1460,
+        origem_h:4000,
+        rotation: 0
+    },
+    "31.png": {
+        x: 403, y: 27, width: 184, height: 184, rotation: 0,
+        origem_w:1000,
+        origem_h:576
+    },
+    "32.png": {
+        x: 194, y: -2, width: 72, height: 72, rotation: 0,
+        origem_w:409,
+        origem_h:320
+    },
+    "33.png": {
+        x: 194, y: 49, width: 219, height: 219, rotation: 0,
+        origem_w:600,
+        origem_h:900
+    },
+    "34.png": {
+        x: 293, y: 102, width: 160, height: 160, rotation: 0,
+        origem_w:748,
+        origem_h:784
+    },
+    "35.png": {
+        x: 185, y: 44, width: 120, height: 120, rotation: 0,
+        origem_w:537,
+        origem_h:866
+    },"36.png": {
+        x: 133, y: 88, width: 108, height: 108, rotation: 0,
+        origem_w:383,
+        origem_h:748
+    },"37.png": {
+        x: 398, y: 435, width: 397, height: 451, rotation: 0,
+        origem_w:1200,
+        origem_h:1805
+    },"38.png": {
+        onTop: false,
+        x: 395, y: 205, width: 441, height: 441, rotation: 0,
+        origem_w:1212,
+        origem_h:1735
+    }
+    // ,"39.png": {
+    //     onTop: false,
+    //     x: 1200, y: 440, width: 527, height: 527, rotation: -26.78,
+    //     origem_w:2395,
+    //     origem_h:1641
+    // }
+    ,"40.png": {
+        onTop: false,
+        x: 296, y: 117, width: 240, height: 240, rotation: 3.70,
+        origem_w:811,
+        origem_h:1200,
     }
 }
 
@@ -472,16 +567,24 @@ async function cropImage() {
         // debugger
         tmp.on('dragend', (e) => {
             console.log(e.target.x(), e.target.y(), e.target.rotation(), e.target.width(), e.target.height(), e.target.scaleX(), e.target.scaleY())
-            console.log(e.target)
+
+            console.log({
+                x: Math.round(e.target.x()),
+                y: Math.round(e.target.y()),
+                width: Math.round(e.target.width() * e.target.scaleX()),
+                height: Math.round(e.target.height() * e.target.scaleY()),
+                rotation: e.target.rotation()
+            })
+            // console.log(e.target)
         })
 
         imageObj2.src = croppedDataURL
         layerUP.add(tmp);
 
-        // create new transformer
-        //var tr = new Konva.Transformer();
-        //layerUP.add(tr);
-        //tr.nodes([tmp]);
+        // habilita a edição
+        // var tr = new Konva.Transformer();
+        // layerUP.add(tr);
+        // tr.nodes([tmp]);
 
         if(configImg?.onTop){
             allavatartlayer[index].moveToTop()
